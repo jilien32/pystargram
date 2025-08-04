@@ -5,12 +5,21 @@
     <meta charset="UTF-8">
     <title>Pystargram</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'font-awesome/css/fontawesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/brands.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/solid.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/sharp-thin.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/sharp-duotone-thin.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% block style %}
+    {% endblock %}
 </head>
 <body>
     <nav class="d-flex justify-content-between py-2 px-4 bg-black text-white">
         <div>
-            {# TODO: main 연결 #}
-            <a href="" class="text-decoration-none text-white">Pystargram</a>
+
+            <a href="{% url 'main' %}" class="text-decoration-none text-white">Pystargram</a>
         </div>
         <div class="text-end">
             {% if request.user.is_authenticated %}
@@ -26,12 +35,14 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container pt-3">
         {% block content %}
 
         {% endblock %}
     </div>
 
 <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+{% block js %}
+{% endblock %}
 </body>
 </html>

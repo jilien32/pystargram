@@ -42,7 +42,7 @@ class User(AbstractBaseUser):
 
     class Meta:
         verbose_name = '유저'
-        verbose_name_plural = f'{verbose_name}'
+        verbose_name_plural = f'{verbose_name} 목록'
 
     def get_full_name(self):
         return self.nickname
