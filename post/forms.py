@@ -1,6 +1,6 @@
 from django.forms import inlineformset_factory
 
-from post.models import Post, PostImage
+from post.models import Post, PostImage, Comment
 from utils.forms import BootstrapModelForm
 
 
@@ -19,8 +19,13 @@ PostImageFormSet = inlineformset_factory(
     Post, PostImage, form=PostImageForm, extra=1, can_delete=True, min_num=1, max_num=5
 )
 
-# formset = [
-#     PostImageFormSet(post=Post),
-#     PostImageFormSet(post=Post),
-#     PostImageFormSet(post=Post),
-# ]
+formset = [
+    PostImageForm(),
+    PostImageForm(),
+    PostImageForm(),
+]
+
+class CommentForm(BootstrapModelForm):
+    class Meta:
+        model = Comment
+        fields = ('content', )

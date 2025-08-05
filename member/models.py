@@ -1,6 +1,9 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+from utils.models import TimestampModel
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password):
         if not email:
@@ -33,8 +36,16 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     nickname = models.CharField('nickname', max_length=20, unique=True)
+    # 나를 팔로우 하는 사람이 팔로워
+    # 내가 팔로우 하는 사람이 팔로잉
+    # User N:N User
+    # a <=> symmentrical = True
+    # a => symmetrical = False
+    following = models.ManyToManyField(
+        'self', symmetrical=False, related_name='followers', through='UserFollowing', through_fields=('from_user', 'to_user')
+    )
 
-    object = UserManager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -69,3 +80,15 @@ class User(AbstractBaseUser):
 
 # user.is_superuser() 이 아니라
 # user.is_superuser 이렇게 사용하게 해주는게 @property
+
+class UserFollowing(TimestampModel):
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_followers')
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_following')
+
+    class Meta:
+        unique_together = ('to_user', 'from_user')
+    # to_user 1, from user 2
+    # to_user 1, from user 3
+    # to_user 1, from user 4
+
+    # to_user 1, from user 2 => 오류

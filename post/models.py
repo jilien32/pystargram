@@ -1,5 +1,9 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from utils.models import TimestampModel
 
@@ -29,7 +33,7 @@ class PostImage(TimestampModel):
 
 # Post
     # 이미지(여러개)
-    # 글
+    # 글 1000, 2000, content #django / 10억개, 100억개, 1000억개 * 200글자
     # 작성자
     # 작성일자
     # 수정일자
@@ -43,13 +47,33 @@ class Tag(TimestampModel):
     def __str__(self):
         return self.tag
 
+# 댓글
 class Comment(TimestampModel):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     content = models.CharField('내용', max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.post} | {self.user}'
+        return f'[comment]{self.post} | {self.user}'
 
-# 댓글
+class Like(TimestampModel):
+    post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'[like]{self.post} | {self.user}'
+
+@receiver(post_save, sender=Post)
+def post_post_save(sender, instance, created, **kwargs):
+    hashtags = re.findall(r'#(\w{1,100})(?=\s|$)', instance.content)
+
+    instance.tags.clear()
+
+    if hashtags:
+        tags = [
+            Tag.objects.get_or_create(tag=hashtag)
+            for hashtag in hashtags
+        ]
+        tags = [tag for tag, _ in tags]
+
+        instance.tags.add(*tags)
