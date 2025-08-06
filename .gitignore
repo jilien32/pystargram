@@ -1,3 +1,4 @@
 .idea/*
 .config_secret/*
-.gitignore
+config/settings.py
+.static_root

@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.utils.crypto import get_random_string
 
 from utils.models import TimestampModel
 
@@ -23,6 +24,9 @@ class UserManager(BaseUserManager):
         user.is_active = True
         user.save(using=self._db)
         return user
+
+    def make_random_password(self, length=10, allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'):
+        return get_random_string(length, allowed_chars)
 
 # 암호화는 qwer1234 -> asdadsfasdf231 -> 복호화 -> qwer1234
 # 해시화 qwer1234 -> asdadsf / asdf231 -> 암호화(asdadsf) -> 암호화를 반복 -> qwerqwe -> 복호화가 불가능
